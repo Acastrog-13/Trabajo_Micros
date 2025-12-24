@@ -1,0 +1,52 @@
+# --- Directorios de Compilación y Salida ---
+# Estas carpetas se generan automáticamente al compilar.
+Debug/
+Release/
+build/
+bin/
+
+# --- Archivos de Objetos y Dependencias ---
+*.o
+*.obj
+*.d
+*.dep
+
+# --- Archivos Generados por el Linker y Compilador ---
+*.map
+*.elf
+*.bin
+*.hex
+*.list
+*.lss
+*.sym
+*.srec
+
+# --- Análisis de Stack (Pila) ---
+# Generado por GCC en CubeIDE para ver el uso de memoria
+*.su
+
+# --- Archivos Específicos de Eclipse / STM32CubeIDE ---
+# Configuraciones locales que no deben compartirse entre usuarios
+.settings/
+.metadata/
+
+# Archivos de configuración de lanzamiento (Debug configurations)
+*.launch
+
+# --- Archivos de Sistema Operativo ---
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Mac OS
+.DS_Store
+
+# --- IMPORTANTE: Archivos que SÍ queremos (No ignorar) ---
+# El archivo .ioc es CRÍTICO, contiene la configuración del microcontrolador.
+!*.ioc
+
+# Archivos de definición de proyecto (necesarios para importar en CubeIDE)
+!*.project
+!*.cproject
+!*.mxproject
