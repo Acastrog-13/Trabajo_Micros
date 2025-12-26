@@ -57,6 +57,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define BTN_ROTAR_Pin GPIO_PIN_0
+#define BTN_ROTAR_GPIO_Port GPIOA
+#define SPI_CS_Pin GPIO_PIN_4
+#define SPI_CS_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 
