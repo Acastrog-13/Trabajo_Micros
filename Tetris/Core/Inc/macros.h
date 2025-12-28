@@ -16,7 +16,8 @@ typedef enum {
     ARRIBA,
     ABAJO,
     IZQUIERDA,
-    DERECHA
+    DERECHA,
+	ROTAR
 } Direccion_t;
 
 #endif // MACROS_H
