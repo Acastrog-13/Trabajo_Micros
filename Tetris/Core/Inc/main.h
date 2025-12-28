@@ -57,10 +57,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define BTN_ROTAR_Pin GPIO_PIN_0
-#define BTN_ROTAR_GPIO_Port GPIOA
-#define SPI_CS_Pin GPIO_PIN_4
-#define SPI_CS_GPIO_Port GPIOA
+#define Rotaci_n_Pin GPIO_PIN_2
+#define Rotaci_n_GPIO_Port GPIOC
+#define Rotaci_n_EXTI_IRQn EXTI2_IRQn
+#define Joystick_Pin GPIO_PIN_0
+#define Joystick_GPIO_Port GPIOA
+#define Caida_R_pida_Pin GPIO_PIN_1
+#define Caida_R_pida_GPIO_Port GPIOB
+#define Caida_R_pida_EXTI_IRQn EXTI1_IRQn
 
 /* USER CODE BEGIN Private defines */
 
