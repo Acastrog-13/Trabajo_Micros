@@ -42,17 +42,22 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
-/* USER CODE BEGIN PV */
-volatile uint8_t flag_adc=0, flag_caida=0, flag_rotar=0;
-volatile uint16_t joystick_val;
+SPI_HandleTypeDef hspi1;
 
-Juego_t tetrisGame;
+TIM_HandleTypeDef htim2;
+
+/* USER CODE BEGIN PV */
+volatile uint8_t flag_adc=0, flag_caida=0, flag_rotar=0, flag_timer = 0;
+volatile uint16_t joystick_val;
+Juego_t Tetris;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_SPI1_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -71,22 +76,34 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 	}
 }
 
-
-void MAX7219_Enviar(uint8_t registro, uint8_t dato) {
-    uint8_t buffer[2];
-    buffer[0] = registro;
-    buffer[1] = dato;
-
-    // 1. Bajamos CS (Chip Select) para iniciar comunicación
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-
-    // 2. Transmitimos los 2 bytes (Registro + Dato)
-    HAL_SPI_Transmit(&hspi1, buffer, 2, HAL_MAX_DELAY);
-
-
-    // 3. Subimos CS para confirmar el dato
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef *htim){
+	if (htim->Instance == TIM2) flag_timer = 1;
 }
+
+void MAX7219_Send(int target_module, uint8_t reg, uint8_t data) {
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET); // CS Low
+
+    // Enviamos datos para TODOS los módulos en la cadena
+    // Debemos enviar primero los datos para el ÚLTIMO módulo
+    for (int i = NUM_MATRIZ - 1; i >= 0; i--) {
+        if (i == target_module) {
+            // Si es el módulo que queremos tocar, enviamos el comando real
+            HAL_SPI_Transmit(&hspi1, &reg, 1, 100);
+            HAL_SPI_Transmit(&hspi1, &data, 1, 100);
+        } else {
+            // Si NO es el módulo objetivo, enviamos NO-OP (0x00, 0x00)
+            // Esto no cambia nada en esa matriz
+            uint8_t noop_reg = MAX7219_REG_NOOP;
+            uint8_t noop_data = 0x00;
+            HAL_SPI_Transmit(&hspi1, &noop_reg, 1, 100);
+            HAL_SPI_Transmit(&hspi1, &noop_data, 1, 100);
+        }
+    }
+
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET); // CS High (Latch)
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -119,10 +136,12 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
+  MX_SPI1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   // Inicializamos la lógica del Tetris (Timers, Tablero, Piezas)
-  Juego_Init(&tetrisGame);
-  // ARRANCAR EL TIMER 2 CON INTERRUPCIONES
+  Juego_Init(&Tetris);
+
   HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
@@ -133,7 +152,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  Juego_EjecutarMaquinaEstados(&tetrisGame);
+	  Juego_EjecutarMaquinaEstados(&Tetris, &hadc1,
+			  &flag_caida, &flag_rotar, &flag_adc, &flag_timer, joystick_val);
+
 	  HAL_Delay(10);
 
   }
@@ -178,7 +199,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
@@ -239,6 +260,89 @@ static void MX_ADC1_Init(void)
 }
 
 /**
+  * @brief SPI1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI1_Init(void)
+{
+
+  /* USER CODE BEGIN SPI1_Init 0 */
+
+  /* USER CODE END SPI1_Init 0 */
+
+  /* USER CODE BEGIN SPI1_Init 1 */
+
+  /* USER CODE END SPI1_Init 1 */
+  /* SPI1 parameter configuration*/
+  hspi1.Instance = SPI1;
+  hspi1.Init.Mode = SPI_MODE_MASTER;
+  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi1.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI1_Init 2 */
+
+  /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 12499;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 499;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -257,6 +361,9 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : Rotaci_n_Pin */
@@ -264,6 +371,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(Rotaci_n_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SPI1_CS_Pin */
+  GPIO_InitStruct.Pin = SPI1_CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(SPI1_CS_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : Caida_R_pida_Pin */
   GPIO_InitStruct.Pin = Caida_R_pida_Pin;
@@ -291,13 +405,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-// Callback que se ejecuta cuando el TIM2 "desborda" (pasa 1ms)
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    // Verificamos que quien llama es el TIM2 (por si activas más timers en el futuro)
-    if (htim->Instance == TIM2) {
-        Juego_TimerTick(); // Avisamos a la FSM
-    }
-}
+
 /* USER CODE END 4 */
 
 /**

@@ -2,17 +2,16 @@
 #define TABLERO_H
 
 #include "macros.h"
-#include "pieza.h" // Necesita conocer la estructura Pieza para calcular choques
+#include "pieza.h"
 
-// Estructura del Tablero (Objeto Tablero)
+// Estructura del Tablero
 typedef struct {
     // Matriz que guarda 1 si está ocupado, 0 si está libre
     uint8_t matriz[TABLERO_ALTO][TABLERO_ANCHO];
 } Tablero_t;
 
-// --- MÉTODOS PÚBLICOS ---
 
-// Limpia el tablero (todo a 0)
+// Limpia el tablero
 void Tablero_Init(Tablero_t *me);
 
 // Verifica si la pieza, en su posición actual, choca con bordes o bloques existentes
@@ -25,4 +24,4 @@ void Tablero_FijarPieza(Tablero_t *me, Pieza_t *pieza);
 // Retorna el número de líneas eliminadas (para la puntuación)
 int Tablero_EliminarLineasCompletas(Tablero_t *me);
 
-#endif // TABLERO_H
+#endif

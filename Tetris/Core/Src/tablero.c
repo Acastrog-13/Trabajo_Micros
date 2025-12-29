@@ -1,11 +1,8 @@
 #include "tablero.h"
 #include <string.h>
 
-// El tablero real es más alto que la pantalla para el "spawn" fluido
-// Definido en macros.h: TABLERO_ALTO (ej. 20) vs VISIBLE_ALTO (16)
 
 void Tablero_Init(Tablero_t *me) {
-    // Limpia todo el tablero, incluyendo la zona oculta
     for (int i = 0; i < TABLERO_ALTO; i++) {
         for (int j = 0; j < TABLERO_ANCHO; j++) {
             me->matriz[i][j] = 0;
@@ -44,7 +41,6 @@ void Tablero_FijarPieza(Tablero_t *me, Pieza_t *pieza) {
                 int realX = pieza->x + j;
                 int realY = pieza->y + i;
 
-                // Se "quema" la pieza en la matriz del tablero
                 if (realY >= 0 && realY < TABLERO_ALTO && realX >= 0 && realX < TABLERO_ANCHO) {
                     me->matriz[realY][realX] = 1;
                 }
@@ -67,13 +63,13 @@ int Tablero_EliminarLineasCompletas(Tablero_t *me) {
 
         if (filaLlena) {
             lineasEliminadas++;
-            // Bajamos las filas superiores manualmente
+            // Se bajan las filas superiores manualmente
             for (int k = i; k > 0; k--) {
                 for (int col = 0; col < TABLERO_ANCHO; col++) {
                     me->matriz[k][col] = me->matriz[k-1][col];
                 }
             }
-            // Limpiamos la fila de arriba del todo
+            // Se limpia la fila de arriba del todo
             for (int col = 0; col < TABLERO_ANCHO; col++) {
                 me->matriz[0][col] = 0;
             }
