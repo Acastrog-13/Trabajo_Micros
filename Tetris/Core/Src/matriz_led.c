@@ -1,9 +1,9 @@
 #include "matriz_led.h"
 #include "main.h"
 
-void MatrizLED_Ini(void) {
+void MatrizLED_Init(void) {
     // Inicializamos TODOS los módulos
-    for (int i = 0; i < NUM_MATRIZ; i++) {
+    for (uint8_t i = 0; i < NUM_MATRIZ; i++) {
         MAX7219_Send(i, MAX7219_REG_SHUTDOWN, 0x01);
         MAX7219_Send(i, MAX7219_REG_DISPLAYTEST, 0x00);
         MAX7219_Send(i, MAX7219_REG_DECODEMODE, 0x00);
@@ -11,18 +11,18 @@ void MatrizLED_Ini(void) {
         MAX7219_Send(i, MAX7219_REG_INTENSITY, 0x02); // Brillo suave
 
         // Limpiar pantalla
-        for(int row=1; row<=8; row++) {
+        for(uint8_t row=1; row<=8; row++) {
             MAX7219_Send(i, row, 0x00);
         }
     }
 }
 
-void MatrixLED_Actualizar(Tablero_t *tablero, Pieza_t *piezaActual) {
+void MatrizLED_Actualizar(Tablero_t *tablero, Pieza_t *piezaActual) {
     
-    for (int f = 0; f < 16; f++) {
+    for (uint8_t f = 0; f < 16; f++) {
         uint8_t filaBits = 0;
       
-        for (int c = 0; c < TABLERO_ANCHO; c++) {
+        for (uint8_t c = 0; c < TABLERO_ANCHO; c++) {
             bool encendido = false;
 
             // Bloque del tablero
@@ -51,7 +51,7 @@ void MatrixLED_Actualizar(Tablero_t *tablero, Pieza_t *piezaActual) {
 
 void MatrizLED_MostrarGameOver(void) {
     // Efecto Llenado
-    for (int f = 0; f < 16; f++) {
+    for (uint8_t f = 0; f < 16; f++) {
 
         if (f < 8) MAX7219_Send(0, f + 1, 0xFF);
         else MAX7219_Send(1, (f - 8) + 1, 0xFF);
@@ -62,7 +62,7 @@ void MatrizLED_MostrarGameOver(void) {
     HAL_Delay(500);
 
     // Efecto Vaciado
-    for (int f = 0; f < 16; f++) {
+    for (uint8_t f = 0; f < 16; f++) {
 
         if (f < 8) MAX7219_Send(0, f + 1, 0x00);
         else MAX7219_Send(1, (f - 8) + 1, 0x00);
