@@ -1,7 +1,7 @@
 #include "matriz_led.h"
 #include "main.h"
 
-void MatrizLED_Init(void) {
+void MatrizLED_Ini(void) {
     // Inicializamos TODOS los módulos
     for (uint8_t i = 0; i < NUM_MATRIZ; i++) {
         MAX7219_Send(i, MAX7219_REG_SHUTDOWN, 0x01);

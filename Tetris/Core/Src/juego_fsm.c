@@ -4,7 +4,7 @@
 void Juego_Init(Juego_t* me) {
 
     Tablero_Init(&me->tablero);
-    MatrizLED_Init();
+    MatrizLED_Ini();
 
     // Se configura estado inicial del juego
     me->estadoActual = ESTADO_INICIO;

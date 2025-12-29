@@ -23,9 +23,9 @@ extern void MAX7219_Send(int target_module, uint8_t reg, uint8_t data);
 void MatrizLED_Ini(void);
 
 // Recibe el tablero y la pieza actual para combinarlos y dibujarlos
-void MatriszED_Actualizar(Tablero_t *tablero, Pieza_t *piezaActual);
+void MatrizLED_Actualizar(Tablero_t *tablero, Pieza_t *piezaActual);
 
 // Efecto visual para Game Over
-void MatrixLED_MostrarGameOver(void);
+void MatrizLED_MostrarGameOver(void);
 
 #endif // MATRIZ_LED_H
