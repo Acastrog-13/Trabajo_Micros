@@ -10,8 +10,8 @@
 
 //Estructura de la pieza
 typedef struct {
-    uint8_t x;              				// Posición X en el tablero
-    uint8_t y;              				// Posición Y en el tablero
+    int8_t x;              				// Posición X en el tablero
+    int8_t y;              				    // Posición Y en el tablero
     uint8_t tipo;           				// Identificador de la forma
     uint8_t rotacion;       				// Estado de rotación
     uint8_t forma[PIEZA_ALTO][PIEZA_ANCHO]; //contiene la rotación actual de las piezas

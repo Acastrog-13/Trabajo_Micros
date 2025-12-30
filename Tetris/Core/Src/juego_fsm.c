@@ -9,7 +9,8 @@ void Juego_Init(Juego_t* me) {
     // Se configura estado inicial del juego
     me->estadoActual = ESTADO_INICIO;
     me->puntuacion = 0;
-    me->velocidadCaida = 500;
+    me->velocidadCaida = 12499;
+
 
 }
 
@@ -25,22 +26,28 @@ void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
     switch (me->estadoActual) {
 
     case ESTADO_INICIO:
-        MatrizLED_MostrarGameOver();
+    	MatrizLED_PantallaInicio();
         if(*flag_rotar) {
 			*flag_rotar = 0;
+			*flag_timer = 0;
+
+			Pieza_Init(&me->piezaSiguiente);
+		    Control_Ini(&me->control, hadc); //Se inicializa la interrupción del Joystick
+
 			me->estadoActual = ESTADO_GENERAR;
 		}
         break;
 
     case ESTADO_GENERAR:
         // Se crea pieza arriba
-        Pieza_Init(&me->piezaActual);
+        me->piezaActual = me->piezaSiguiente;
+		Pieza_Init(&me->piezaSiguiente);
+		MatrizLED_MostrarSiguiente(&me->piezaSiguiente);
 
         if (Tablero_VerificarColision(&me->tablero, &me->piezaActual))
             me->estadoActual = ESTADO_GAMEOVER;
         else {
         	MatrizLED_Actualizar(&me->tablero, &me->piezaActual);
-			Control_Ini(&me->control, hadc); //Se inicializa la interrupción del Joystick
 			me->estadoActual = ESTADO_BAJANDO;
         }
         break;
@@ -60,14 +67,57 @@ void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
 		}
 
 		//Rotación
-		if (dir==ROTAR){
-			Pieza_Rotar(&me->piezaActual);
-			if (Tablero_VerificarColision(&me->tablero, &me->piezaActual)) {
-				// Revertir rotación
-				Pieza_Rotar(&me->piezaActual);
-				Pieza_Rotar(&me->piezaActual);
-				Pieza_Rotar(&me->piezaActual);
-			}
+		if (dir == ROTAR) {
+		    Pieza_Rotar(&me->piezaActual);
+		    bool kickExitoso = false;
+
+		    if (Tablero_VerificarColision(&me->tablero, &me->piezaActual)) {
+		        Direccion_t dir = DERECHA;
+
+		        Pieza_Mover(&me->piezaActual, dir);
+		        if (!Tablero_VerificarColision(&me->tablero, &me->piezaActual)) kickExitoso = true;
+		        else if (me->piezaActual.tipo == 0) {
+		            Pieza_Mover(&me->piezaActual, dir);
+		            if (!Tablero_VerificarColision(&me->tablero, &me->piezaActual)) kickExitoso = true;
+		            else {
+		            	Pieza_Mover(&me->piezaActual, dir);
+		            	if (!Tablero_VerificarColision(&me->tablero, &me->piezaActual)) kickExitoso = true;
+		            	else {
+		            		RevertirMovimiento(&me->piezaActual, dir);
+		            		RevertirMovimiento(&me->piezaActual, dir);
+		            	}
+		            }
+		        }
+
+		        if (!kickExitoso) RevertirMovimiento(&me->piezaActual, dir);
+
+		        if (!kickExitoso) {
+		        	dir = IZQUIERDA;
+
+		            Pieza_Mover(&me->piezaActual, dir);
+		            if (!Tablero_VerificarColision(&me->tablero, &me->piezaActual)) kickExitoso = true;
+		            else if (me->piezaActual.tipo == 0) {
+						Pieza_Mover(&me->piezaActual, dir);
+						if (!Tablero_VerificarColision(&me->tablero, &me->piezaActual)) kickExitoso = true;
+						else {
+							Pieza_Mover(&me->piezaActual, dir);
+							if (!Tablero_VerificarColision(&me->tablero, &me->piezaActual)) kickExitoso = true;
+							else {
+								RevertirMovimiento(&me->piezaActual, dir);
+							}
+						}
+					}
+		        }
+
+
+		        if (!kickExitoso) {
+					RevertirMovimiento(&me->piezaActual, dir);
+
+		            Pieza_Rotar(&me->piezaActual);
+		            Pieza_Rotar(&me->piezaActual);
+		            Pieza_Rotar(&me->piezaActual);
+		        }
+		    }
 		}
 
 		//Caída
@@ -86,9 +136,17 @@ void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
 		break;
 
     case ESTADO_FIJAR:
+    	static uint32_t aux;
     	Tablero_FijarPieza(&me->tablero, &me->piezaActual);
 		uint16_t lineas = Tablero_EliminarLineasCompletas(&me->tablero);
 		me->puntuacion += (lineas * 100);
+
+		if (aux != me->puntuacion && me->puntuacion % 100 == 0) {
+	        MatrizLED_Puntuacion(me->puntuacion);
+			me->velocidadCaida *= 0.7;
+			aux = me->puntuacion;
+		}
+
 		MatrizLED_Actualizar(&me->tablero, &me->piezaActual);
 		me->estadoActual = ESTADO_GENERAR;
 		break;

@@ -65,7 +65,10 @@ static void MX_TIM2_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	if (GPIO_Pin == GPIO_PIN_1) flag_caida=1;
+	if (GPIO_Pin == GPIO_PIN_1){
+		if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1) == GPIO_PIN_SET) flag_caida = 1;
+		else flag_caida = 0;
+	}
 	if (GPIO_Pin == GPIO_PIN_2) flag_rotar=1;
 }
 
@@ -83,16 +86,13 @@ void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef *htim){
 void MAX7219_Send(int target_module, uint8_t reg, uint8_t data) {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET); // CS Low
 
-    // Enviamos datos para TODOS los módulos en la cadena
-    // Debemos enviar primero los datos para el ÚLTIMO módulo
     for (int i = NUM_MATRIZ - 1; i >= 0; i--) {
         if (i == target_module) {
-            // Si es el módulo que queremos tocar, enviamos el comando real
             HAL_SPI_Transmit(&hspi1, &reg, 1, 100);
             HAL_SPI_Transmit(&hspi1, &data, 1, 100);
-        } else {
-            // Si NO es el módulo objetivo, enviamos NO-OP (0x00, 0x00)
-            // Esto no cambia nada en esa matriz
+        }
+        else {
+
             uint8_t noop_reg = MAX7219_REG_NOOP;
             uint8_t noop_data = 0x00;
             HAL_SPI_Transmit(&hspi1, &noop_reg, 1, 100);
@@ -152,6 +152,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  __HAL_TIM_SET_PRESCALER (&htim2, Tetris.velocidadCaida);
+
 	  Juego_EjecutarMaquinaEstados(&Tetris, &hadc1,
 			  &flag_caida, &flag_rotar, &flag_adc, &flag_timer, joystick_val);
 
@@ -381,7 +383,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : Caida_R_pida_Pin */
   GPIO_InitStruct.Pin = Caida_R_pida_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(Caida_R_pida_GPIO_Port, &GPIO_InitStruct);
 

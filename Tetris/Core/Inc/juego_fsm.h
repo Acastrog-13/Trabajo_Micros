@@ -23,6 +23,7 @@ typedef struct {
     Control_t control;
     Tablero_t tablero;      	// Instancia del tablero
     Pieza_t piezaActual;    	// Instancia de la pieza activa
+    Pieza_t piezaSiguiente;
     uint32_t puntuacion;
     uint32_t velocidadCaida; 	// Tiempo en ms para caída automática
 } Juego_t;
@@ -33,6 +34,6 @@ void Juego_Init(Juego_t *me);
 
 // Función maquina de estados
 void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
-		uint8_t* flag_caida, uint8_t* flag_rotar, uint8_t* flag_adc, uint8_t* flag_timer, uint16_t joystick_val);
+		uint8_t* flag_caida, uint8_t* flag_rotar, uint8_t* flag_adc, uint8_t* flag_timer, uint16_t adc_val);
 
 #endif

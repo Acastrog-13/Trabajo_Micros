@@ -36,13 +36,11 @@ Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_
 				button_count_c++;
 			else {
 				button_count_c = 0;
-				*flag_caida=0;
 			}
 
 
 			if (button_count_c >= 3) {
 				button_count_c = 0;
-				*flag_caida = 0;
 
 				HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
 				return ABAJO;
@@ -85,6 +83,7 @@ Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_
 			HAL_GPIO_WritePin (GPIOD, GPIO_PIN_13,1);
 			return IZQUIERDA;
 		}
+
 	}
 
 	return NINGUNA;

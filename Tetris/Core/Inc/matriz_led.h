@@ -5,7 +5,7 @@
 #include "tablero.h"
 #include "pieza.h"
 
-#define NUM_MATRIZ 2
+#define NUM_MATRIZ 3
 
 // Direcciones
 #define MAX7219_REG_NOOP        0x00
@@ -25,7 +25,11 @@ void MatrizLED_Ini(void);
 // Recibe el tablero y la pieza actual para combinarlos y dibujarlos
 void MatrizLED_Actualizar(Tablero_t *tablero, Pieza_t *piezaActual);
 
+void MatrizLED_MostrarSiguiente(Pieza_t *piezaSiguiente);
+
+void MatrizLED_Puntuacion(uint32_t puntuacion);
 // Efecto visual para Game Over
 void MatrizLED_MostrarGameOver(void);
+void MatrizLED_PantallaInicio(void);
 
 #endif // MATRIZ_LED_H
