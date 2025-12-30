@@ -8,16 +8,16 @@
 
 typedef struct {
     ADC_HandleTypeDef* hadc;
-
-    uint16_t centro;
+    uint16_t centroX;
+    uint16_t centroY;
 
 } Control_t;
 
 //Detecta al iniciar el centro del Joystick y calcula la zona muerta
-void Control_Ini(Control_t* me, ADC_HandleTypeDef* hadc);
+void Control_Ini(Control_t* me, ADC_HandleTypeDef* hadc, uint16_t lecturasJoystick[2]);
 
 
 //Calcula la dirección según proceda
-Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_adc, uint8_t* flag_rotar, uint16_t adc_val);
+Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_adc, uint8_t* flag_rotar, uint16_t lecturasJoystick[2]);
 
 #endif

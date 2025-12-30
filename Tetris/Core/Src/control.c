@@ -1,20 +1,15 @@
 #include <control.h>
 
-void Control_Ini(Control_t* me, ADC_HandleTypeDef* hadc){
+void Control_Ini(Control_t* me, ADC_HandleTypeDef* hadc, uint16_t lecturasJoystick[2]){
 	me->hadc = hadc;
 
 	//Detección del centro por polling
-	HAL_ADC_Start(me->hadc);
-	HAL_ADC_PollForConversion(me->hadc, HAL_MAX_DELAY);
-	me->centro=HAL_ADC_GetValue(me->hadc);
-	HAL_ADC_Stop(me->hadc);
-
-	//Se reanuda conversión por interrupciones
-	HAL_ADC_Start_IT(me->hadc);
+	me->centroY = lecturasJoystick[0];
+	me->centroX = lecturasJoystick[1];
 }
 
 
-Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_adc, uint8_t* flag_rotar, uint16_t adc_val){
+Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_adc, uint8_t* flag_rotar, uint16_t lecturasJoystick[2]){
 
 	//Leds de control
 	HAL_GPIO_WritePin (GPIOD, GPIO_PIN_12,0);
@@ -28,25 +23,25 @@ Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_
 	static uint8_t button_count_r = 0;
 
 	//Caida rápida
-	if (*flag_caida) {
-		if (HAL_GetTick() - counter_c >= 20) {
-			counter_c = HAL_GetTick();
-
-			if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1) == 1)
-				button_count_c++;
-			else {
-				button_count_c = 0;
-			}
-
-
-			if (button_count_c >= 3) {
-				button_count_c = 0;
-
-				HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-				return ABAJO;
-			}
-		}
-	}
+//	if (*flag_caida) {
+//		if (HAL_GetTick() - counter_c >= 20) {
+//			counter_c = HAL_GetTick();
+//
+//			if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1) == 1)
+//				button_count_c++;
+//			else {
+//				button_count_c = 0;
+//			}
+//
+//
+//			if (button_count_c >= 3) {
+//				button_count_c = 0;
+//
+//				HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+//				return ABAJO;
+//			}
+//		}
+//	}
 
 	//Rotación
 	if (*flag_rotar) {
@@ -71,20 +66,20 @@ Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_
 	}
 
 	//Dirección del Joystick
-	if (*flag_adc){
-		*flag_adc=0;
-		HAL_ADC_Start_IT(me->hadc);
 
-		if(adc_val > me->centro+ZONA_MUERTA) {
-			HAL_GPIO_WritePin (GPIOD, GPIO_PIN_15,1);
+	if(lecturasJoystick[1] > me->centroX + ZONA_MUERTA) {
+			HAL_GPIO_WritePin (GPIOD, GPIO_PIN_15, 1);
 			return DERECHA;
-		}
-		else if (adc_val< me->centro-ZONA_MUERTA) {
-			HAL_GPIO_WritePin (GPIOD, GPIO_PIN_13,1);
-			return IZQUIERDA;
-		}
-
 	}
+	else if (lecturasJoystick[1] < me->centroX - ZONA_MUERTA) {
+		HAL_GPIO_WritePin (GPIOD, GPIO_PIN_13, 1);
+		return IZQUIERDA;
+	}
+
+	if (lecturasJoystick[0] < me->centroY - ZONA_MUERTA) {
+		return ABAJO;
+	}
+
 
 	return NINGUNA;
 }
