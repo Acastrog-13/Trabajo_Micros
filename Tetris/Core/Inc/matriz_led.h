@@ -16,10 +16,9 @@
 #define MAX7219_REG_SHUTDOWN    0x0C
 #define MAX7219_REG_DISPLAYTEST 0x0F
 
-extern void MAX7219_Send(int target_module, uint8_t reg, uint8_t data);
+extern void MAX7219_Send(int8_t target_module, uint8_t reg, uint8_t data);
 
-
-// Configura GPIOs y SPI (si se usa) para la matriz
+// Configura GPIOs y SPI para la matriz
 void MatrizLED_Ini(void);
 
 // Recibe el tablero y la pieza actual para combinarlos y dibujarlos

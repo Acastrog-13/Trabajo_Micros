@@ -81,10 +81,10 @@ void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef *htim){
 	if (htim->Instance == TIM2) flag_timer = 1;
 }
 
-void MAX7219_Send(int target_module, uint8_t reg, uint8_t data) {
+void MAX7219_Send(int8_t target_module, uint8_t reg, uint8_t data) {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET); // CS Low
 
-    for (int i = NUM_MATRIZ - 1; i >= 0; i--) {
+    for (int8_t i = NUM_MATRIZ - 1; i >= 0; i--) {
         if (i == target_module) {
             HAL_SPI_Transmit(&hspi1, &reg, 1, 100);
             HAL_SPI_Transmit(&hspi1, &data, 1, 100);

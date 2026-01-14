@@ -49,20 +49,20 @@ void MatrizLED_Actualizar(Tablero_t *tablero, Pieza_t *piezaActual) {
     }
 }
 
-void MatrizLED_Limpiar(int target_module){
-	for(int i=0; i<8;i++){
+void MatrizLED_Limpiar(int8_t target_module){
+	for(int8_t i=0; i<8;i++){
 		MAX7219_Send(target_module, i+1, 0x00);
 	}
 }
 
 void MatrizLED_MostrarSiguiente(Pieza_t *piezaSiguiente) {
-    int offsetX = piezaSiguiente->x;
+    int8_t offsetX = piezaSiguiente->x;
 
-    for (int f = 0; f < 4; f++) {
+    for (int8_t f = 0; f < 4; f++) {
         uint8_t filaBits = 0;
-        int filaPieza = f;
+        int8_t filaPieza = f;
 
-		for (int c = 0; c < 4; c++)
+		for (int8_t c = 0; c < 4; c++)
 			if (Pieza_GetBloque(piezaSiguiente, filaPieza, c))
 				filaBits |= (0x80 >> (c + offsetX));
 
@@ -76,8 +76,8 @@ void MatrizLED_Puntuacion(uint32_t puntuacion) {
     uint8_t nivelCarga = (puntuacion % PUNTOS_PARA_LLENAR) * 24 / PUNTOS_PARA_LLENAR;
     uint8_t filaBarra[3] = {0, 0, 0};
 
-    for (int i = 0; i < 3; i++) {
-        int ledsAEncender = 0;
+    for (int8_t i = 0; i < 3; i++) {
+        int8_t ledsAEncender = 0;
 
         if (i == 2) {
             if (nivelCarga >= 8) ledsAEncender = 8;
@@ -132,6 +132,7 @@ static const uint8_t BITMAP_RAIN[36] = {
     0x18, // ...**...
     0x18, // ...**...
     0x18, // ...**...
+    0x18, // ...**...
     0x00, //
 
     // --- E ---
@@ -183,7 +184,7 @@ void MatrizLED_PantallaInicio(void) {
     static uint32_t timerScroll = 0;
     static uint32_t timerBlink = 0;
 
-    static int offsetRain = 0;
+    static int8_t offsetRain = 0;
     static uint8_t mostrarFlecha = 1;
 
     uint32_t ahora = HAL_GetTick();
@@ -203,9 +204,9 @@ void MatrizLED_PantallaInicio(void) {
             timerBlink = ahora;
         }
 
-    for (int i = 0; i < 16; i++) {
+    for (int8_t i = 0; i < 16; i++) {
 
-        int indiceBitmap = (i - offsetRain + 36) % 36;
+        int8_t indiceBitmap = (i - offsetRain + 36) % 36;
 
         uint8_t data = BITMAP_RAIN[indiceBitmap];
 
@@ -216,7 +217,7 @@ void MatrizLED_PantallaInicio(void) {
         }
     }
 
-    for (int i = 0; i < 8; i++) {
+    for (int8_t i = 0; i < 8; i++) {
         uint8_t data = 0x00;
 
         if (mostrarFlecha) {
