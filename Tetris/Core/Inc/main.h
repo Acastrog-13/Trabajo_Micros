@@ -64,9 +64,6 @@ void Error_Handler(void);
 #define Joystick_GPIO_Port GPIOA
 #define SPI1_CS_Pin GPIO_PIN_4
 #define SPI1_CS_GPIO_Port GPIOA
-#define Caida_R_pida_Pin GPIO_PIN_1
-#define Caida_R_pida_GPIO_Port GPIOB
-#define Caida_R_pida_EXTI_IRQn EXTI1_IRQn
 
 /* USER CODE BEGIN Private defines */
 

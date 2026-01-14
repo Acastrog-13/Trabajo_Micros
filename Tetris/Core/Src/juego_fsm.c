@@ -30,7 +30,7 @@ void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
         if(*flag_rotar) {
 			*flag_rotar = 0;
 			*flag_timer = 0;
-
+			MatrizLED_Limpiar(2);
 			Pieza_Init(&me->piezaSiguiente);
 		    Control_Ini(&me->control, hadc, lecturasJoystick); //Se inicializa la interrupción del Joystick
 

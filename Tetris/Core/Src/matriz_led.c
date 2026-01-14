@@ -48,7 +48,11 @@ void MatrizLED_Actualizar(Tablero_t *tablero, Pieza_t *piezaActual) {
 
     }
 }
-
+void MatrizLED_Limpiar(int target_module){
+	for(int i=0; i<8;i++){
+		MAX7219_Send(target_module, i+1, 0x00);
+	}
+}
 void MatrizLED_MostrarSiguiente(Pieza_t *piezaSiguiente) {
     int offsetX = piezaSiguiente->x;
 
@@ -213,7 +217,7 @@ void MatrizLED_PantallaInicio(void) {
             offsetRain--; // <--- CAMBIO: Restamos para ir hacia atrás
 
             // Si baja de 0, damos la vuelta y lo ponemos al final (23)
-            if (offsetRain < 0) offsetRain = 23;
+            if (offsetRain < 0) offsetRain = 35;
 
             timerScroll = ahora;
         }
