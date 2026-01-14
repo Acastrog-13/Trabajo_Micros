@@ -21,11 +21,11 @@ typedef enum {
 typedef struct {
     EstadoJuego_t estadoActual;
     Control_t control;
-    Tablero_t tablero;      	// Instancia del tablero
-    Pieza_t piezaActual;    	// Instancia de la pieza activa
+    Tablero_t tablero;
+    Pieza_t piezaActual;
     Pieza_t piezaSiguiente;
     uint32_t puntuacion;
-    uint32_t velocidadCaida; 	// Tiempo en ms para caída automática
+    uint32_t velocidadCaida;
 } Juego_t;
 
 

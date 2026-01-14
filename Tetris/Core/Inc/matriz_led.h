@@ -25,11 +25,16 @@ void MatrizLED_Ini(void);
 // Recibe el tablero y la pieza actual para combinarlos y dibujarlos
 void MatrizLED_Actualizar(Tablero_t *tablero, Pieza_t *piezaActual);
 
+// Muestra la siguiente pieza en la matriz 2
 void MatrizLED_MostrarSiguiente(Pieza_t *piezaSiguiente);
 
+// Muestra la puntuación en la matriz 2
 void MatrizLED_Puntuacion(uint32_t puntuacion);
+
 // Efecto visual para Game Over
 void MatrizLED_MostrarGameOver(void);
+
+// Pantalla de TETRIS
 void MatrizLED_PantallaInicio(void);
 
 #endif // MATRIZ_LED_H

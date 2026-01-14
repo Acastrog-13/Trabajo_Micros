@@ -71,6 +71,7 @@ void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
 		    Pieza_Rotar(&me->piezaActual);
 		    bool kickExitoso = false;
 
+		    //Si choca mueve la pieza hacia la derecha y mira en el caso que sea barra para moverla dos veces
 		    if (Tablero_VerificarColision(&me->tablero, &me->piezaActual)) {
 		        Direccion_t dir = DERECHA;
 
@@ -85,12 +86,14 @@ void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
 		            	else {
 		            		RevertirMovimiento(&me->piezaActual, dir);
 		            		RevertirMovimiento(&me->piezaActual, dir);
+		            		// Si sigue chocando revierte movimiento porque no puede rotar
 		            	}
 		            }
 		        }
 
 		        if (!kickExitoso) RevertirMovimiento(&me->piezaActual, dir);
 
+		        // Si choca mueve la pieza hacia la izquierda y mira en el caso que sea barra para moverla dos veces
 		        if (!kickExitoso) {
 		        	dir = IZQUIERDA;
 
@@ -109,7 +112,7 @@ void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
 					}
 		        }
 
-
+		        // Si todo ha salido mal deja todo como estaba
 		        if (!kickExitoso) {
 					RevertirMovimiento(&me->piezaActual, dir);
 
@@ -135,6 +138,7 @@ void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
 		MatrizLED_Actualizar(&me->tablero, &me->piezaActual);
 		break;
 
+	// Si la pieza no puede bajar más pasa a ser pieza fija
     case ESTADO_FIJAR:
     	static uint32_t aux;
     	Tablero_FijarPieza(&me->tablero, &me->piezaActual);

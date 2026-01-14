@@ -5,10 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define TABLERO_ALTO 16      					// Tablero lógico (memoria)
-#define TABLERO_ANCHO 8      					// Ancho estándar
-
-//#define SPAWN_ZONA (TABLERO_ALTO - VISIBLE_ALTO) // Las 4 filas de arriba
+#define TABLERO_ALTO 16
+#define TABLERO_ANCHO 8
 
 // Definición de direcciones para el Joystick y movimientos
 typedef enum {

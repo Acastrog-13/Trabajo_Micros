@@ -22,27 +22,6 @@ Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_
 	static uint32_t counter_r = 0;
 	static uint8_t button_count_r = 0;
 
-	//Caida rápida
-//	if (*flag_caida) {
-//		if (HAL_GetTick() - counter_c >= 20) {
-//			counter_c = HAL_GetTick();
-//
-//			if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1) == 1)
-//				button_count_c++;
-//			else {
-//				button_count_c = 0;
-//			}
-//
-//
-//			if (button_count_c >= 3) {
-//				button_count_c = 0;
-//
-//				HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-//				return ABAJO;
-//			}
-//		}
-//	}
-
 	//Rotación
 	if (*flag_rotar) {
 		if (HAL_GetTick() - counter_r >= 20) {
@@ -66,7 +45,6 @@ Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_
 	}
 
 	//Dirección del Joystick
-
 	if(lecturasJoystick[1] > me->centroX + ZONA_MUERTA) {
 			HAL_GPIO_WritePin (GPIOD, GPIO_PIN_15, 1);
 			return DERECHA;

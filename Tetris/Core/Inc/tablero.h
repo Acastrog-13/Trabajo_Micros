@@ -17,11 +17,11 @@ void Tablero_Init(Tablero_t *me);
 // Verifica si la pieza, en su posición actual, choca con bordes o bloques existentes
 bool Tablero_VerificarColision(Tablero_t *me, Pieza_t *pieza);
 
-// Copia los bloques de la pieza a la matriz del tablero (se llama cuando la pieza toca suelo)
+// Copia los bloques de la pieza a la matriz del tablero
 void Tablero_FijarPieza(Tablero_t *me, Pieza_t *pieza);
 
 // Escanea el tablero, elimina líneas completas y baja las superiores.
-// Retorna el número de líneas eliminadas (para la puntuación)
+// Retorna el número de líneas eliminadas
 int Tablero_EliminarLineasCompletas(Tablero_t *me);
 
 #endif
