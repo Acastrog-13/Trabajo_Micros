@@ -20,8 +20,7 @@ static void RevertirMovimiento(Pieza_t* p, Direccion_t dir) {
     else if (dir == ABAJO) 		Pieza_Mover(p, ARRIBA);
 }
 
-void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
-		uint8_t* flag_caida, uint8_t* flag_rotar, uint8_t* flag_adc, uint8_t* flag_timer, uint16_t lecturasJoystick[2]) {
+void Juego_EjecutarMaquinaEstados(Juego_t *me, uint8_t* flag_rotar, uint8_t* flag_timer, uint32_t lecturasJoystick[2]) {
 
     switch (me->estadoActual) {
 
@@ -32,7 +31,7 @@ void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
 			*flag_timer = 0;
 			MatrizLED_Limpiar(2);
 			Pieza_Init(&me->piezaSiguiente);
-		    Control_Ini(&me->control, hadc, lecturasJoystick); //Se inicializa la interrupción del Joystick
+		    Control_Ini(&me->control, lecturasJoystick);
 
 			me->estadoActual = ESTADO_GENERAR;
 		}
@@ -53,7 +52,7 @@ void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
         break;
 
     case ESTADO_BAJANDO:
-    	Direccion_t dir = Control_updateDir(&me->control, flag_caida, flag_adc, flag_rotar, lecturasJoystick);
+    	Direccion_t dir = Control_updateDir(&me->control, flag_rotar, lecturasJoystick);
 		static uint8_t orden=0;
 
 		if (dir==NINGUNA) orden=0;

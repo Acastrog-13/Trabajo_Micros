@@ -1,15 +1,13 @@
 #include <control.h>
 
-void Control_Ini(Control_t* me, ADC_HandleTypeDef* hadc, uint16_t lecturasJoystick[2]){
-	me->hadc = hadc;
+void Control_Ini(Control_t* me, uint32_t lecturasJoystick[2]){
 
-	//Detección del centro por polling
 	me->centroY = lecturasJoystick[0];
 	me->centroX = lecturasJoystick[1];
 }
 
 
-Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_adc, uint8_t* flag_rotar, uint16_t lecturasJoystick[2]){
+Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_rotar, uint32_t lecturasJoystick[2]){
 
 	//Leds de control
 	HAL_GPIO_WritePin (GPIOD, GPIO_PIN_12,0);
@@ -17,8 +15,6 @@ Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_
 	HAL_GPIO_WritePin (GPIOD, GPIO_PIN_15,0);
 
 	//Variables para antirrebotoes
-	static uint32_t counter_c = 0;
-	static uint8_t button_count_c = 0;
 	static uint32_t counter_r = 0;
 	static uint8_t button_count_r = 0;
 
@@ -33,7 +29,6 @@ Direccion_t Control_updateDir(Control_t* me, uint8_t* flag_caida, uint8_t* flag_
 				button_count_r = 0;
 				*flag_rotar=0;
 			}
-
 
 			if (button_count_r >= 3) {
 				button_count_r = 0;

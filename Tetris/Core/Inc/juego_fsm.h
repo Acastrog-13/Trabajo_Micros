@@ -33,7 +33,6 @@ typedef struct {
 void Juego_Init(Juego_t *me);
 
 // Función maquina de estados
-void Juego_EjecutarMaquinaEstados(Juego_t *me, ADC_HandleTypeDef* hadc,
-		uint8_t* flag_caida, uint8_t* flag_rotar, uint8_t* flag_adc, uint8_t* flag_timer, uint16_t lecturasJoystick[2]);
+void Juego_EjecutarMaquinaEstados(Juego_t *me, uint8_t* flag_rotar, uint8_t* flag_timer, uint32_t lecturasJoystick[2]);
 
 #endif

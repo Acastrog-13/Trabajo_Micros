@@ -48,8 +48,8 @@ SPI_HandleTypeDef hspi1;
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
-volatile uint8_t flag_adc=0, flag_caida=0, flag_rotar=0, flag_timer = 0;
-uint16_t lecturasJoystick[2];
+volatile uint8_t flag_rotar=0, flag_timer = 0;
+uint32_t lecturasJoystick[2];
 Juego_t Tetris;
 /* USER CODE END PV */
 
@@ -69,13 +69,6 @@ static void MX_TIM2_Init(void);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin == GPIO_PIN_2) flag_rotar=1;
 }
-
-//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
-//	if (hadc->Instance == ADC1){
-//		joystick_val = HAL_ADC_GetValue(hadc);
-//		flag_adc=1;
-//	}
-//}
 
 void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef *htim){
 	if (htim->Instance == TIM2) flag_timer = 1;
@@ -98,7 +91,7 @@ void MAX7219_Send(int8_t target_module, uint8_t reg, uint8_t data) {
         }
     }
 
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET); // CS High (Latch)
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET); // CS High
 }
 
 
@@ -138,7 +131,7 @@ int main(void)
   MX_SPI1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  // Inicializamos la lógica del Tetris (Timers, Tablero, Piezas)
+  // Inicializamos la lógica del Tetris
   Juego_Init(&Tetris);
 
   HAL_TIM_Base_Start_IT(&htim2);
@@ -155,8 +148,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  __HAL_TIM_SET_PRESCALER (&htim2, Tetris.velocidadCaida);
 
-	  Juego_EjecutarMaquinaEstados(&Tetris, &hadc1,
-			  &flag_caida, &flag_rotar, &flag_adc, &flag_timer, lecturasJoystick);
+	  Juego_EjecutarMaquinaEstados(&Tetris, &flag_rotar, &flag_timer, lecturasJoystick);
 
 	  HAL_Delay(10);
 
